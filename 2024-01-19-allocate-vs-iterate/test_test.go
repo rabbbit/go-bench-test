@@ -6,6 +6,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+type smthWrapper struct {
+	s [1000]*something
+	m []*something
+}
+
 type something struct {
 	a    string
 	b    string
@@ -28,6 +33,34 @@ func prep() []*something {
 	return prep
 }
 
+func BenchmarkHeap(b *testing.B) {
+	prep := prep()
+	wrapper := &smthWrapper{}
+	wrapper.m = wrapper.s[:0]
+	for i := 0; i <= b.N; i++ {
+		for _, item := range prep {
+			if item.want == true {
+				wrapper.m = append(wrapper.m, item)
+			}
+		}
+	}
+	require.True(b, len(wrapper.m) > 0)
+}
+
+func BenchmarkZero(b *testing.B) {
+	prep := prep()
+	var mm [1000]*something
+	m := mm[:0]
+	for i := 0; i <= b.N; i++ {
+		for _, item := range prep {
+			if item.want == true {
+				m = append(m, item)
+			}
+		}
+	}
+	require.True(b, len(m) > 0)
+}
+
 func BenchmarkOne(b *testing.B) {
 	prep := prep()
 	var m []*something
@@ -36,6 +69,20 @@ func BenchmarkOne(b *testing.B) {
 		for _, item := range prep {
 			if item.want == true {
 				m = append(m, item)
+			}
+		}
+	}
+	require.True(b, len(m) > 0)
+}
+
+func BenchmarkOneA(b *testing.B) {
+	prep := prep()
+	var m []something
+	for i := 0; i <= b.N; i++ {
+		m = make([]something, 0, 1000)
+		for _, item := range prep {
+			if item.want == true {
+				m = append(m, *item)
 			}
 		}
 	}

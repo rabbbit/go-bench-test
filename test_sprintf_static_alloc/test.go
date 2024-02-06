@@ -7,8 +7,10 @@ import (
 	"sync"
 )
 
-const q = "q"
-const format = "q=%d"
+const (
+	q      = "q"
+	format = "q=%d"
+)
 
 func concat(i int) string {
 	var sb strings.Builder
@@ -45,4 +47,26 @@ func concat3(i int) string {
 
 func concat4(i int) string {
 	return fmt.Sprintf(format, i)
+}
+
+func RollingConcat() {
+	a := []string{"a", "b", "c", "d"}
+	var out string
+	for _, a := range a {
+		out = "hello " + a
+	}
+	if out == "" {
+		panic("hi")
+	}
+}
+
+func RollingSprintf() {
+	var out string
+	a := []string{"a", "b", "c", "d"}
+	for _, a := range a {
+		out = fmt.Sprintf("%s %s", "hello", a)
+	}
+	if out == "" {
+		panic("hi")
+	}
 }

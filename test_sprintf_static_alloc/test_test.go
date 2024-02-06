@@ -120,3 +120,25 @@ func BenchmarkDynamicBuilderReset(b *testing.B) {
 	}
 	require.NotZero(b, out)
 }
+
+func BenchmarkRollingConcat(b *testing.B) {
+	a := []string{"a", "b", "c", "d"}
+	var out string
+	for i := 0; i <= b.N; i++ {
+		for _, a := range a {
+			out = "hello " + a
+		}
+	}
+	require.Equal(b, "hello d", out)
+}
+
+func BenchmarkRollingSprintf(b *testing.B) {
+	var out string
+	a := []string{"a", "b", "c", "d"}
+	for i := 0; i <= b.N; i++ {
+		for _, a := range a {
+			out = fmt.Sprintf("%s %s", "hello", a)
+		}
+	}
+	require.Equal(b, "hello d", out)
+}
