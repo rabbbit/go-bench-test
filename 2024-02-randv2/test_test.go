@@ -9,22 +9,22 @@ import (
 )
 
 func BenchmarkV1(b *testing.B) {
-	var instanceID uint64 = 123131
-	r := randv2.New(randv2.NewPCG(instanceID, instanceID+1))
+	var instanceID int64 = 123131
+	r := rand.New(rand.NewSource(instanceID))
 
 	var a uint32
-	for i := 0; i <= b.N; i++ {
+	for b.Loop() {
 		a = r.Uint32()
 	}
 	require.NotEqual(b, -1, a)
 }
 
 func BenchmarkV2(b *testing.B) {
-	var instanceID int64 = 123131
-	r := rand.New(rand.NewSource(instanceID))
+	var instanceID uint64 = 123131
+	r := randv2.New(randv2.NewPCG(instanceID, instanceID+1))
 
 	var a uint32
-	for i := 0; i <= b.N; i++ {
+	for b.Loop() {
 		a = r.Uint32()
 	}
 	require.NotEqual(b, -1, a)
@@ -32,16 +32,28 @@ func BenchmarkV2(b *testing.B) {
 
 func BenchmarkV2Global(b *testing.B) {
 	var a uint32
-	for i := 0; i <= b.N; i++ {
+	for b.Loop() {
 		a = randv2.Uint32()
 	}
 	require.NotEqual(b, -1, a)
 }
 
-func BenchmarkV2IntN(b *testing.B) {
-	var a int
-	for i := 0; i <= b.N; i++ {
-		a = int(randv2.IntN(120))
+func BenchmarkV1Int63N(b *testing.B) {
+	var instanceID int64 = 123131
+	r := rand.New(rand.NewSource(instanceID))
+	var a int64
+	for b.Loop() {
+		a = r.Int63n(1_000_000)
+	}
+	require.NotEqual(b, -1, a)
+}
+
+func BenchmarkV2Int64NPCG(b *testing.B) {
+	var instanceID uint64 = 123131
+	r := randv2.New(randv2.NewPCG(instanceID, instanceID+1))
+	var a int64
+	for b.Loop() {
+		a = r.Int64N(1_000_000)
 	}
 	require.NotEqual(b, -1, a)
 }
@@ -57,7 +69,7 @@ func twoInt32(n int32) (int32, int32) {
 
 func BenchmarkV2TwoInt(b *testing.B) {
 	var a, c int32
-	for i := 0; i <= b.N; i++ {
+	for b.Loop() {
 		a, c = twoInt32(120)
 	}
 	require.NotEqual(b, -1, a)
